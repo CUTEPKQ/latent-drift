@@ -454,15 +454,30 @@
       tabs: document.getElementById('caseTabs')
     };
     var state = { caseId: 'patient1', n: 93, playing: false, timer: null };
+    var cache = {}; // caseId -> { pre:[Image], pred:[Image], diff:[Image] }
 
     function pad(i) { return ('000' + i).slice(-3); }
-    function base() { return './static/cases/' + state.caseId + '/'; }
+    function base(caseId) { return './static/cases/' + caseId + '/'; }
+
+    function preload(caseId, n) {
+      if (cache[caseId]) return;
+      var b = base(caseId), c = { pre: [], pred: [], diff: [] };
+      for (var i = 0; i < n; i++) {
+        var p = pad(i);
+        ['pre', 'pred', 'diff'].forEach(function (k) {
+          var im = new Image();
+          im.src = b + k + '_' + p + '.png';
+          c[k].push(im);
+        });
+      }
+      cache[caseId] = c;
+    }
 
     function render(i) {
-      var b = base(), p = pad(i);
-      els.pre.src = b + 'pre_' + p + '.png';
-      els.pred.src = b + 'pred_' + p + '.png';
-      els.diff.src = b + 'diff_' + p + '.png';
+      var c = cache[state.caseId];
+      els.pre.src = c.pre[i].src;
+      els.pred.src = c.pred[i].src;
+      els.diff.src = c.diff[i].src;
       els.idx.textContent = 'Slice ' + i + ' / ' + (state.n - 1);
     }
 
@@ -473,6 +488,7 @@
       els.info.textContent = 'Age ' + btn.getAttribute('data-age') + ' · ' +
         btn.getAttribute('data-sex') + ' · forecast horizon ' +
         btn.getAttribute('data-months') + ' months';
+      preload(state.caseId, state.n);
       render(parseInt(els.slider.value, 10));
     }
 
