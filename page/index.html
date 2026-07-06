@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies">
+  <meta name="keywords" content="Slow-Evolving Pathologies, Generative Model, Brain Simulation, Neuro-Forecasting, MRI">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <style>
+    :root {
+      --accent: #5b6cff;
+      --accent-dark: #3b49d6;
+      --ink: #1f2430;
+      --muted: #6b7280;
+      --bg-alt: #f5f7fc;
+      --border: #e7e9f0;
+    }
+
+    /* ---------- Typography ---------- */
+    body {
+      font-family: 'Inter', 'Noto Sans', sans-serif;
+      color: var(--ink);
+      background: #ffffff;
+    }
+    .title, .subtitle, .publication-title, .navbar-link, .button {
+      font-family: 'Sora', 'Inter', sans-serif;
+    }
+    .publication-title {
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+
+    /* ---------- Title hero ---------- */
+    .title-hero {
+      background: radial-gradient(1200px 420px at 50% -120px, #e9edff 0%, #f6f8ff 45%, #ffffff 80%);
+      border-bottom: 1px solid var(--border);
+    }
+    .venue-badge {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      background: #fff0f3;
+      color: #ff3860;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      border: 1px solid #ffd6df;
+    }
+
+    /* ---------- Block separation ---------- */
+    .block-section { padding: 4rem 1.5rem; }
+    .block-alt { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    /* ---------- Section headings with accent underline ---------- */
+    .section-heading {
+      position: relative;
+      display: inline-block;
+      font-weight: 700;
+      margin-bottom: 2.5rem !important;
+      padding-bottom: 0.7rem;
+    }
+    .section-heading::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      width: 60px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #9aa6ff);
+    }
+
+    /* ---------- Links ---------- */
+    a { color: var(--accent); transition: color .15s ease; }
+    a:hover { color: var(--accent-dark); }
+    .publication-authors a { color: var(--accent) !important; font-weight: 600; }
+
+    /* ---------- Buttons ---------- */
+    .publication-links .button.is-dark {
+      background: var(--ink);
+      border: none;
+      border-radius: 999px;
+      padding-left: 1.3rem;
+      padding-right: 1.3rem;
+      transition: transform .15s ease, background .15s ease;
+    }
+    .publication-links .button.is-dark:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* ---------- Navbar ---------- */
+    .navbar { border-bottom: 1px solid var(--border); }
+    .navbar-link, .navbar-item { font-weight: 600; }
+
+    /* ---------- Figures ---------- */
+    .publication-img {
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(31, 36, 48, 0.08);
+      background: #fff;
+    }
+    .fig-caption {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      max-width: 920px;
+      margin: 0.9rem auto 0;
+    }
+    .result-img {
+      height: 230px;
+      width: auto;
+      max-width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ---------- Abstract ---------- */
+    .abstract-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    /* ---------- MRI slice viewer ---------- */
+    .viewer-tabs {
+      display: inline-flex;
+      gap: 0.4rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.3rem;
+      margin-bottom: 1.8rem;
+    }
+    .viewer-tab {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Sora', 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background .15s ease, color .15s ease;
+    }
+    .viewer-tab.active { background: var(--accent); color: #fff; }
+    .viewer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.1rem;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .viewer-cell { text-align: center; }
+    .viewer-cell .panel-label {
+      font-family: 'Sora', 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      color: var(--ink);
+    }
+    .viewer-cell .panel-label .sub { color: var(--muted); font-weight: 400; font-size: 0.78rem; display:block; }
+    .viewer-frame {
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 96 / 112;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .viewer-frame img { width: 100%; height: 100%; object-fit: contain; image-rendering: auto; }
+    .viewer-frame.is-diff { border-color: #ffcaca; }
+    .slider-row {
+      max-width: 620px;
+      margin: 1.8rem auto 0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .slider-row input[type=range] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+    .slider-row .slice-idx {
+      font-family: 'Sora', 'Inter', sans-serif;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.9rem;
+      min-width: 92px;
+      text-align: left;
+    }
+    .play-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--accent-dark);
+      border-radius: 999px;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background .15s ease, color .15s ease;
+    }
+    .play-btn:hover { background: var(--accent); color: #fff; }
+    .case-meta {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0.4rem auto 1.6rem;
+      max-width: 720px;
+    }
+    @media (max-width: 768px) {
+      .viewer-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ---------- 3D side-by-side ---------- */
+    .nv-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+      max-width: 760px;
+      margin: 1.6rem auto 0;
+    }
+    .nv-col .panel-label {
+      font-family: 'Sora', 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+      color: var(--ink);
+    }
+    .nv-col .panel-label .sub { color: var(--muted); font-weight: 400; font-size: 0.78rem; display: block; }
+    .nv-canvas-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 8px 24px rgba(31, 36, 48, 0.12);
+    }
+    .nv-canvas-wrap canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ---------- Contribution cards ---------- */
+    .contrib-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.5rem;
+      height: 100%;
+      box-shadow: 0 8px 24px rgba(31, 36, 48, 0.05);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .contrib-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(31, 36, 48, 0.12);
+    }
+    .contrib-card h4 {
+      font-family: 'Sora', 'Inter', sans-serif;
+      font-weight: 700;
+      color: var(--accent-dark);
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
+    }
+    .contrib-card p { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+
+    /* ---------- Misc ---------- */
+    .hl { color: #ff3860; font-weight: 700; }
+    .smaller-text { font-size: 0.85rem; }
+    .author-footnote { font-size: 0.95rem; margin-top: 0.6rem; color: var(--muted); }
+    pre code {
+      background-color: #0f1222;
+      color: #e6e8f0;
+      display: block;
+      padding: 1.3rem 1.5rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===================== HERO / TITLE ===================== -->
+<section class="hero title-hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title">
+            Progression as Latent Drift:<br>
+            Generative Forecasting of Slow-Evolving Pathologies
+          </h1>
+
+          <!-- Venue -->
+          <div style="margin-top:1rem">
+            <span class="venue-badge">Accepted to ECCV 2026</span>
+          </div>
+
+          <!-- Authors -->
+          <div class="is-size-5 publication-authors" style="margin-top:1.2rem">
+            <span class="author-block"><a href="mailto:fengyx@zju.edu.cn">Yuxiang Feng</a><sup>1,3,&#9733;</sup>,</span>
+            <span class="author-block"><a href="mailto:wjc2830@gmail.com">Juncheng Wang</a><sup>2,&#9733;</sup>,</span>
+            <span class="author-block">Chao Xu<sup>3,4</sup>,</span>
+            <span class="author-block">Wenlong Hou<sup>2</sup>,</span>
+            <span class="author-block">Huihan Wang<sup>2</sup>,</span>
+            <br>
+            <span class="author-block">Yijie Qian<sup>1,3</sup>,</span>
+            <span class="author-block">Yang Liu<sup>3,4</sup>,</span>
+            <span class="author-block">Baigui Sun<sup>3,4</sup>,</span>
+            <span class="author-block"><a href="mailto:yongliu@iipc.zju.edu.cn">Yong Liu</a><sup>1,&#8224;</sup>,</span>
+            <span class="author-block"><a href="mailto:shu-jun.wang@polyu.edu.hk">Shujun Wang</a><sup>2,&#8224;</sup></span>
+          </div>
+
+          <!-- Affiliations -->
+          <div class="is-size-6 publication-authors" style="margin-top:0.8rem">
+            <span class="author-block"><sup>1</sup>Zhejiang University</span>&nbsp;&nbsp;
+            <span class="author-block"><sup>2</sup>The Hong Kong Polytechnic University</span>&nbsp;&nbsp;
+            <span class="author-block"><sup>3</sup>IROOTECH TECHNOLOGY</span>&nbsp;&nbsp;
+            <span class="author-block"><sup>4</sup>Wolf 1069 b Lab, Sany Group</span>
+          </div>
+
+          <!-- Footnotes -->
+          <div class="is-size-6 publication-authors author-footnote">
+            <span class="author-block"><sup>&#9733;</sup>Equal contribution,</span>&nbsp;
+            <span class="author-block"><sup>&#8224;</sup>Corresponding authors.</span>
+          </div>
+
+          <!-- Links / Buttons -->
+          <div class="column has-text-centered" style="margin-top:1.2rem">
+            <div class="publication-links">
+              <!-- arXiv link to be added once available -->
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark" style="pointer-events:none; opacity:0.55;">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv (coming soon)</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#BibTeX" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-quote-left"></i></span>
+                  <span>BibTeX</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TEASER ===================== -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body has-text-centered">
+      <img src="./static/images/Fig1.png" alt="Latent Drift teaser" class="publication-img">
+      <h2 class="subtitle has-text-centered" style="margin-top:1.2rem">
+        <strong>Latent Drift</strong> forecasts patient-specific neurodegeneration by learning
+        <span class="hl">temporal change in a compressed semantic space</span> rather than
+        re-synthesizing full-resolution anatomy&nbsp;&mdash; escaping identity collapse and
+        filtering nuisance noise in the low-signal regime.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INTERACTIVE MRI VIEWER ===================== -->
+<section class="section block-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full has-text-centered">
+        <h2 class="title is-3 section-heading">Interactive Forecasts</h2>
+
+        <p class="case-meta">
+          Scrub through the brain volume slice by slice. For each case we show the patient's
+          <strong>baseline (Pre)</strong> scan and our model's <strong>forecast</strong>, plus a
+          <span class="hl">highlight</span> of the progression our model predicts relative to the
+          baseline.
+        </p>
+
+        <!-- Case tabs -->
+        <div class="viewer-tabs" id="caseTabs">
+          <button class="viewer-tab active" data-case="patient1" data-months="12" data-age="80" data-sex="Male" data-nslices="76">Case 1 &middot; +12 mo</button>
+          <button class="viewer-tab" data-case="patient2" data-months="36" data-age="76" data-sex="Female" data-nslices="76">Case 2 &middot; +36 mo</button>
+        </div>
+
+        <p class="case-meta" id="caseInfo" style="margin-top:-0.6rem;"></p>
+
+        <!-- Panels -->
+        <div class="viewer-grid">
+          <div class="viewer-cell">
+            <div class="panel-label">Baseline<span class="sub">Pre (current)</span></div>
+            <div class="viewer-frame"><img id="imgPre" alt="Baseline slice"></div>
+          </div>
+          <div class="viewer-cell">
+            <div class="panel-label">Forecast<span class="sub">Predicted future</span></div>
+            <div class="viewer-frame"><img id="imgPred" alt="Predicted slice"></div>
+          </div>
+          <div class="viewer-cell">
+            <div class="panel-label">Predicted Change<span class="sub">Forecast &minus; Pre</span></div>
+            <div class="viewer-frame is-diff"><img id="imgDiff" alt="Predicted change highlight"></div>
+          </div>
+        </div>
+
+        <!-- Slider -->
+        <div class="slider-row">
+          <button class="play-btn" id="playBtn" title="Play / pause">&#9654;</button>
+          <input type="range" id="sliceSlider" min="0" max="75" value="38">
+          <span class="slice-idx" id="sliceIdx">Slice 38 / 75</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var els = {
+      pre: document.getElementById('imgPre'),
+      pred: document.getElementById('imgPred'),
+      diff: document.getElementById('imgDiff'),
+      slider: document.getElementById('sliceSlider'),
+      idx: document.getElementById('sliceIdx'),
+      play: document.getElementById('playBtn'),
+      info: document.getElementById('caseInfo'),
+      tabs: document.getElementById('caseTabs')
+    };
+    var state = { caseId: 'patient1', n: 93, playing: false, timer: null };
+
+    function pad(i) { return ('000' + i).slice(-3); }
+    function base() { return './static/cases/' + state.caseId + '/'; }
+
+    function render(i) {
+      var b = base(), p = pad(i);
+      els.pre.src = b + 'pre_' + p + '.png';
+      els.pred.src = b + 'pred_' + p + '.png';
+      els.diff.src = b + 'diff_' + p + '.png';
+      els.idx.textContent = 'Slice ' + i + ' / ' + (state.n - 1);
+    }
+
+    function setCase(btn) {
+      state.caseId = btn.getAttribute('data-case');
+      state.n = parseInt(btn.getAttribute('data-nslices'), 10);
+      els.slider.max = state.n - 1;
+      els.info.textContent = 'Age ' + btn.getAttribute('data-age') + ' · ' +
+        btn.getAttribute('data-sex') + ' · forecast horizon ' +
+        btn.getAttribute('data-months') + ' months';
+      render(parseInt(els.slider.value, 10));
+    }
+
+    els.slider.addEventListener('input', function () {
+      render(parseInt(this.value, 10));
+    });
+
+    els.tabs.addEventListener('click', function (e) {
+      var btn = e.target.closest('.viewer-tab');
+      if (!btn) return;
+      [].forEach.call(this.querySelectorAll('.viewer-tab'), function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      setCase(btn);
+    });
+
+    function stop() {
+      state.playing = false;
+      els.play.innerHTML = '&#9654;';
+      if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    }
+    els.play.addEventListener('click', function () {
+      if (state.playing) { stop(); return; }
+      state.playing = true;
+      els.play.innerHTML = '&#10073;&#10073;';
+      state.timer = setInterval(function () {
+        var v = (parseInt(els.slider.value, 10) + 1) % state.n;
+        els.slider.value = v;
+        render(v);
+      }, 90);
+    });
+
+    // init
+    setCase(els.tabs.querySelector('.viewer-tab.active'));
+  })();
+</script>
+
+<!-- ===================== 3D VOLUME VIEWER ===================== -->
+<section class="section block-section block-alt">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full has-text-centered">
+        <h2 class="title is-3 section-heading">Explore in 3D</h2>
+
+        <p class="case-meta">
+          <strong>Baseline</strong> (left) and our <strong>forecast</strong> (right), shown as
+          axial / coronal / sagittal cross-sections plus a 3D view. On the forecast, the
+          <span class="hl">predicted progression</span> (forecast &minus; baseline) is overlaid in
+          <span style="color:#ff3860;font-weight:700;">red</span> to show where the model expects
+          change. Drag any plane to scroll through depth.
+        </p>
+
+        <div class="viewer-tabs" id="volCaseTabs">
+          <button class="viewer-tab active" data-case="patient1">Case 1 &middot; +12 mo</button>
+          <button class="viewer-tab" data-case="patient2">Case 2 &middot; +36 mo</button>
+        </div>
+        <div class="viewer-tabs" id="volOverlayTabs" style="margin-left:0.6rem;">
+          <button class="viewer-tab active" data-ov="1">Highlight change</button>
+          <button class="viewer-tab" data-ov="0">Hide</button>
+        </div>
+
+        <div class="nv-pair">
+          <div class="nv-col">
+            <div class="panel-label">Baseline<span class="sub">Pre (current)</span></div>
+            <div class="nv-canvas-wrap"><canvas id="nvLeft"></canvas></div>
+          </div>
+          <div class="nv-col">
+            <div class="panel-label">Forecast<span class="sub">Predicted future + change</span></div>
+            <div class="nv-canvas-wrap"><canvas id="nvRight"></canvas></div>
+          </div>
+        </div>
+        <p class="case-meta smaller-text" id="nvStatus" style="margin-top:0.8rem;">Loading 3D viewer&hellip;</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  import { Niivue } from 'https://esm.sh/@niivue/niivue@0.44.0';
+
+  var status = document.getElementById('nvStatus');
+  var state = { caseId: 'patient1', overlay: true };
+  var nvL, nvR;
+
+  function dir() { return './static/nifti/' + state.caseId + '/'; }
+
+  async function load() {
+    status.textContent = 'Loading volumes…';
+    var right = [{ url: dir() + 'pred.nii.gz', colormap: 'gray' }];
+    if (state.overlay) {
+      right.push({ url: dir() + 'diff.nii.gz', colormap: 'warm', opacity: 0.9, cal_min: 50, cal_max: 220 });
+    }
+    try {
+      await Promise.all([
+        nvL.loadVolumes([{ url: dir() + 'pre.nii.gz', colormap: 'gray' }]),
+        nvR.loadVolumes(right)
+      ]);
+      status.textContent = 'Drag any plane to scroll through depth · scroll to zoom · views are synced';
+    } catch (e) {
+      console.error(e);
+      status.textContent = 'Could not load volumes: ' + (e && e.message ? e.message : e);
+    }
+  }
+
+  async function init() {
+    var opts = { show3Dcrosshair: true, backColor: [0, 0, 0, 1], isColorbar: false };
+    nvL = new Niivue(opts);
+    nvR = new Niivue(opts);
+    await nvL.attachTo('nvLeft');
+    await nvR.attachTo('nvRight');
+    nvL.setSliceType(nvL.sliceTypeMultiplanar);
+    nvR.setSliceType(nvR.sliceTypeMultiplanar);
+    // keep the two viewers synchronized (slice position, zoom, 3D rotation)
+    nvL.broadcastTo(nvR, { "2d": true, "3d": true });
+    nvR.broadcastTo(nvL, { "2d": true, "3d": true });
+    await load();
+  }
+
+  function wire(id, attr, key, cast) {
+    document.getElementById(id).addEventListener('click', function (e) {
+      var btn = e.target.closest('.viewer-tab');
+      if (!btn) return;
+      [].forEach.call(this.querySelectorAll('.viewer-tab'), function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state[key] = cast ? cast(btn.getAttribute(attr)) : btn.getAttribute(attr);
+      load();
+    });
+  }
+  wire('volCaseTabs', 'data-case', 'caseId');
+  wire('volOverlayTabs', 'data-ov', 'overlay', function (v) { return v === '1'; });
+
+  init();
+</script>
+
+<!-- ===================== ABSTRACT ===================== -->
+<section class="section block-section block-alt">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full has-text-centered">
+        <h2 class="title is-3 section-heading">Abstract</h2>
+        <div class="content has-text-justified abstract-text">
+          <p>
+            Forecasting the future anatomy of slow-evolving neurodegenerative diseases could enable
+            earlier, more targeted intervention and improve clinical trial design, but it remains
+            challenging because true progression signals are subtle in longitudinal MRI. In this
+            low-signal regime, transferring modern generative sequence models directly is unreliable:
+            training is dominated by stable baseline anatomy and confounded by dense, sample-specific
+            nuisance variation. We first provide a theoretical analysis that explains these failures
+            through two modes. <strong>Identity collapse</strong> occurs when optimization is driven
+            toward reproducing the current anatomy, which prevents the model from learning faint
+            temporal change. The <strong>continuous interpolation trap</strong> arises when standard
+            smooth networks cannot separate localized biological drift from pervasive noise, which
+            leads to spurious changes that diffuse across the volume. To address both issues, we
+            propose <strong>Latent Drift</strong>, a progressive generative framework that learns
+            change in a compressed semantic representation rather than synthesizing full-resolution
+            anatomy. This design removes pixel-level identity from the prediction target and
+            concentrates model capacity on progression-relevant dynamics. We further apply
+            <strong>Finite Scalar Quantization</strong> to the learned change representation, which
+            suppresses small, high-frequency nuisance fluctuations while preserving consistent
+            structural drift. Experiments on longitudinal 3D brain MRI show that Latent Drift improves
+            patient-specific neuro-forecasting over diffusion and autoregressive transformer baselines
+            across generative fidelity and clinically relevant evaluation metrics.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MOTIVATION / FAILURE MODES ===================== -->
+<section class="section block-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full has-text-centered">
+        <h2 class="title is-3 section-heading">Why Naive Forecasting Fails</h2>
+
+        <div class="content has-text-justified" style="font-size:1.05rem; line-height:1.75; margin-bottom:2.5rem;">
+          <p>
+            Neurodegeneration unfolds over years: across a typical one-year interval, disease-related
+            morphological change may be <strong>under 1% of the total volumetric variance</strong> in a
+            3D MRI scan. As a result, the current and future scans are statistically almost identical,
+            so the temporal progression signal is far weaker than in natural video. Decomposing the
+            future latent state as
+            <em>z<sub>fut</sub> = z<sub>cur</sub> + &delta;<sub>pathology</sub> + &eta;<sub>nuisance</sub></em>
+            exposes two structural failure modes for standard generative models.
+          </p>
+        </div>
+
+        <div class="columns">
+          <div class="column is-half">
+            <div class="contrib-card">
+              <h4>1. Identity Collapse</h4>
+              <p>
+                Because the stationary background overwhelms the biological signal
+                (&#8741;z<sub>cur</sub>&#8741; &gg; &#8741;&delta;&#8741;), a model optimized to
+                synthesize the absolute future state is pushed toward an approximate identity mapping
+                &mdash; it reproduces static neuroanatomy instead of learning the faint temporal drift.
+              </p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="contrib-card">
+              <h4>2. Continuous Interpolation Trap</h4>
+              <p>
+                Shifting the target to the temporal residual exposes a second pathology: any
+                Lipschitz-continuous predictor trained on
+                &Delta;z = &delta; + &eta; must interpolate the dense nuisance noise, smearing spurious
+                variance across the volume and destroying the sparse support of the true drift.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <img src="./static/images/Fig_Gradient_Vis.png" alt="Gradient visualization" class="publication-img" style="margin-top:2.5rem;">
+        <p class="fig-caption has-text-justified">
+          <strong>Gradient analysis.</strong> When predicting the absolute future state, training
+          gradients spread across the whole volume (skull, unaffected hemispheres), confirming
+          identity collapse. When the target is the temporal difference &Delta;z, gradients localize
+          around regions of true change such as the hippocampus.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== METHOD ===================== -->
+<section class="section block-section block-alt">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full has-text-centered">
+        <h2 class="title is-3 section-heading">Method: Progression as Latent Drift</h2>
+
+        <div class="content has-text-justified" style="font-size:1.05rem; line-height:1.75; margin-bottom:2.5rem;">
+          <p>
+            We introduce a two-stage framework that separates the semantic biological trajectory from
+            the stationary background and the dense imaging noise. A <strong>Latent Drift Tokenizer</strong>
+            compresses both scans into a semantic latent space and models the <em>continuous drift</em>
+            &Delta;z<sub>raw</sub> = z<sub>fut</sub> &minus; z<sub>cur</sub>, then passes it through a
+            <strong>Finite Scalar Quantization (FSQ)</strong> bottleneck. This residual objective forces the
+            model to allocate its capacity to structural change &mdash; escaping identity collapse.
+            A <strong>Decoder-Transformer</strong> then autoregressively forecasts the discrete drift
+            tokens, conditioned on the patient's baseline anatomy and clinical metadata.
+          </p>
+          <p>
+            Crucially, FSQ acts as a <span class="hl">topological dead-zone filter</span>: any noise
+            fluctuation with |&Delta;z<sub>raw</sub>| &lt; s/2 is mapped exactly to zero, while
+            consistent structural drift crosses the quantization threshold and is preserved. Because
+            rounding is discontinuous, the operator is <em>non-Lipschitz</em> &mdash; precisely the
+            property needed to break the continuous interpolation trap.
+          </p>
+        </div>
+
+        <img src="./static/images/Fig_Method.png" alt="Latent Drift framework" class="publication-img">
+        <p class="fig-caption has-text-justified">
+          <strong>Framework overview.</strong> A residual tokenization stage isolates and discretizes
+          the temporal difference between longitudinal scans via FSQ, and a Decoder-Transformer
+          forecasts the discrete progression signal conditioned on the baseline state and clinical
+          metadata.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESULTS ===================== -->
+<section class="section block-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full has-text-centered">
+        <h2 class="title is-3 section-heading">Results</h2>
+
+        <div class="content has-text-justified" style="font-size:1.05rem; line-height:1.75; margin-bottom:2rem;">
+          <p>
+            On longitudinal 3D brain MRI from <strong>ADNI</strong> and <strong>AIBL</strong> (3,981
+            current-future pairs), Latent Drift achieves the best structural agreement
+            (<strong>Diff-SSIM 0.8204</strong>, <strong>NCC 0.9880</strong>) and the best downstream
+            clinical utility (<strong>Accuracy 88.33</strong>, <strong>F<sub>1</sub> 87.51</strong>),
+            outperforming diffusion and autoregressive transformer baselines. Wilcoxon signed-rank
+            tests confirm the gains are statistically significant (p &lt; 0.05).
+          </p>
+        </div>
+
+        <div class="columns">
+          <div class="column is-half">
+            <img src="./static/images/Fig_SSIM.png" alt="Longitudinal trajectory" class="publication-img result-img">
+            <p class="fig-caption has-text-justified">
+              <strong>Personalized longitudinal trajectory.</strong> Over a 48-month horizon, Latent
+              Drift tracks the ground-truth rate of anatomical decline, while near-identity baselines
+              (Palette, I2I-DiT) barely change and continuous/AR baselines (VQGAN, RQ-Transformer)
+              drift and fluctuate.
+            </p>
+          </div>
+          <div class="column is-half">
+            <img src="./static/images/NewROI.png" alt="ROI consistency" class="publication-img result-img">
+            <p class="fig-caption has-text-justified">
+              <strong>Consistency across regions.</strong> On three ROIs spanning a ~23&times; range of
+              dynamic change (hippocampus, cerebellum, ventricle), our method stays within [0.93, 1.18]
+              of the ideal recovered-to-ideal ratio &mdash; 2.6&ndash;5.8&times; closer than baselines.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BIBTEX ===================== -->
+<section class="section block-alt" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3 section-heading">BibTeX</h2>
+    <!-- TODO: update with the final published bib entry -->
+    <pre><code>@inproceedings{feng2026latentdrift,
+  title     = {Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies},
+  author    = {Feng, Yuxiang and Wang, Juncheng and Xu, Chao and Hou, Wenlong and
+               Wang, Huihan and Qian, Yijie and Liu, Yang and Sun, Baigui and
+               Liu, Yong and Wang, Shujun},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+</body>
+</html>
