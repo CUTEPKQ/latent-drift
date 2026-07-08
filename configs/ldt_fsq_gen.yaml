@@ -1,0 +1,126 @@
+seed_everything: true
+trainer:
+  accelerator: gpu
+  strategy: ddp_find_unused_parameters_true
+  devices: 1
+  precision: bf16-mixed #
+  max_epochs: 200
+  # num_sanity_val_stexwwps: -1
+  log_every_n_steps: 100
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        dirpath: "checkpoints/ldt_fsq_gen/"
+        every_n_epochs: 5
+        save_last: true
+        save_top_k: -1
+
+    - class_path: lightning.pytorch.callbacks.LearningRateMonitor
+      init_args:
+        logging_interval: step
+  logger:
+    class_path: lightning.pytorch.loggers.WandbLogger
+    init_args:
+      save_dir: "results/ldt_fsq_gen/"
+      project: "medical"
+      name: "ldt_fsq_gen"
+      offline: true
+
+model:
+  class_path: src.models.medical_ldt.Net2NetTransformer
+  init_args:
+    learning_rate: 3e-4 
+    weight_decay: 5e-2
+    wpe: 0.1 
+    wp: 6 ##no warmup
+    wp0: 0.005 ##for warmup
+    twde: 0
+    resume_lr:
+    encoder_config:
+      target: src.modules.autoencoder.video_encoder.WanVAE_Encoder
+      params:
+        dim: 128
+        input_channels: 1
+
+    transformer_config:
+      target: src.modules.transformer.action_gpt.ActionGPT
+      params:
+        indim: 1024
+        vocab_size: 64000
+        spatial_n_layer: 36 ## follow LlamaGen
+        n_head: 16
+        dim: 2048 # head_dim = dim / n_head = 128
+        token_drop: 0.1
+        resid_dropout_p: 0.1
+        class_num: 8 #class tokens
+        t_scale_factor: 2.0
+        mrope_section: [16, 24, 24] # t h w (head_dim = (t+h+w)*2)
+        grid_thw: [23, 14, 12] # t h w
+        use_pool: True
+        target_hw: [5,4]
+
+    #fsq
+    ldt_config:
+      target: src.models.ldt.LatentActionQuantization
+      params:
+        ckpt_path: null
+        lossconfig:
+          target: src.modules.losses.ldt_laq_loss.LDT_NSVQLoss
+          params:
+            disc_start: 0 # from 0 epoch
+            disc_in_channels: 1
+            disc_num_layers: 3
+            disc_weight: 0.8
+            gen_loss_weight: 0.3 #see if it is reuqired to change
+            lecam_loss_weight: 0.05 ##increase to 0.1
+        breakdown_type: true
+        vq_config:
+          target: src.modules.vqvae.ldt_fsq.LDT_FSQ
+          params:
+            dim: 1024
+            patch_size: 8
+
+        dim: 1024
+        patch_size: 8
+        spatial_depth: 8 #8
+        temporal_depth: 8 #8
+        temporal_patch_size: 4
+        dim_head: 64
+        heads: 16
+        code_seq_len: 4
+
+        learning_rate: 1e-4
+        sche_type: cos
+        wpe: 0.01 ## learning rate decay to final lr to 0
+        wp: 2 ##one epoch for linear warmup
+        wp0: 0.0 ##for warmup from zero
+        resume_lr:
+
+      
+
+
+data:
+  class_path: main.DataModuleFromConfig
+  init_args:
+    batch_size: 2
+    num_workers: 16
+    train:
+      target: src.data.ct_video.CTVideoDataset
+      params:
+        config:
+          csv_file: data/case.csv
+
+    validation:
+      target: src.data.ct_video.CTVideoDataset
+      params:
+        config:
+          csv_file: data/case.csv
+
+    test:
+      target: src.data.ct_video.CTVideoDataset
+      params:
+        config:
+          csv_file: data/case.csv
+
+ckpt_path: null # to resume
+

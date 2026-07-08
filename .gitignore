@@ -1,1 +1,41 @@
+# ---- Secrets ----
+.env
+
+# ---- Generated outputs ----
+output/
+results/
+data/processed_np_case/
+third_party/
+
+# ---- Checkpoints / large binaries ----
+*.ckpt
+*.nii.gz
+*.npy
+*.npz
+*.mp4
+
+# ---- Logs ----
+*.log
+*.tfevents.*
+events.out.tfevents.*
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# ---- Env / build ----
+.venv/
+venv/
+build/
+dist/
+
+# ---- OS / editor cruft ----
 .DS_Store
+*.swp
+.idea/
+.vscode/
+
+# ---- Keep project-page assets (served by GitHub Pages) ----
+!docs/**

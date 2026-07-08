@@ -1,0 +1,87 @@
+seed_everything: true
+trainer:
+  accelerator: gpu
+  strategy: ddp_find_unused_parameters_true
+  devices: 8
+  precision: bf16-mixed
+  max_epochs: 800 
+  # check_val_every_n_epoch: 20
+  # num_sanity_val_steps: -1
+  log_every_n_steps: 100
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        dirpath: "checkpoints/ldt_fsq"
+        every_n_epochs: 10
+        save_top_k: 10
+        monitor: "train/reconstruct_loss"
+        mode: "min" 
+        save_last: true
+    - class_path: lightning.pytorch.callbacks.LearningRateMonitor
+      init_args:
+        logging_interval: step
+  logger:
+    class_path: lightning.pytorch.loggers.WandbLogger
+    init_args:
+      save_dir: "results/ldt_fsq/"
+      project: "medical"
+      name: "ldt_fsq"
+      offline: true
+
+
+
+model:
+  class_path: src.models.ldt.LatentActionQuantization
+  init_args:
+    lossconfig:
+      target: src.modules.losses.ldt_laq_loss.LDT_LFQLoss
+      params:
+        disc_start: 0 # from 0 epoch
+        disc_in_channels: 1
+        disc_num_layers: 3
+        disc_weight: 0.8
+        gen_loss_weight: 0.3 #see if it is reuqired to change
+        lecam_loss_weight: 0.05 ##increase to 0.1
+    breakdown_type: true
+    vq_config:
+      target: src.modules.vqvae.ldt_fsq.LDT_FSQ
+      params:
+        dim: 1024
+        patch_size: 8
+
+    dim: 1024
+    patch_size: 8
+    spatial_depth: 8 #8
+    temporal_depth: 8 #8
+    temporal_patch_size: 4
+    dim_head: 64
+    heads: 16
+    code_seq_len: 4
+
+    learning_rate: 1e-4
+    sche_type: cos
+    wpe: 0.01 ## learning rate decay to final lr to 0
+    wp: 2 ##one epoch for linear warmup
+    wp0: 0.0 ##for warmup from zero
+    resume_lr:
+
+data:
+  class_path: main.DataModuleFromConfig
+  init_args:
+    batch_size: 8
+    num_workers: 16
+    train:
+      target: src.data.ct_video.CTVideoDataset
+      params:
+        config:
+          csv_file: data/case.csv
+
+    validation:
+      target: src.data.ct_video.CTVideoDataset
+      params:
+        config:
+          csv_file: data/case.csv
+
+
+ckpt_path: null # to resume
+
