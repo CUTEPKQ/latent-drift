@@ -73,8 +73,6 @@ Entry points: `main.py` (LightningCLI training) and `infer.py` (sampling → mp4
 - [x] Release inference code
 - [x] Release pretrained tokenizer + generator weights
 - [x] Release training code (both stages)
-- [ ] Release arXiv preprint
-- [ ] Extended longitudinal benchmark
 
 <br>
 
