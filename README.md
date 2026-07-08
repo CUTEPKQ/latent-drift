@@ -12,7 +12,6 @@
 <p align="center">
     <a href="#-about">About</a> •
     <a href="#-framework">Framework</a> •
-    <a href="#-roadmap">Roadmap</a> •
     <a href="#-quickstart">Quickstart</a> •
     <a href="#-data-preparation">Data</a> •
     <a href="#-configuration">Configuration</a> •
@@ -24,6 +23,10 @@
 <br>
 
 # 🧠 About
+
+<p align="center">
+    <img src="docs/static/images/Fig1.png" width="100%">
+</p>
 
 Forecasting the future anatomy of slow-evolving neurodegenerative diseases could
 enable earlier intervention and better clinical-trial design, but it is hard
@@ -57,6 +60,10 @@ Latent Drift attains the best structural agreement (**Diff-SSIM 0.8204**,
 
 # 🧩 Framework
 
+<p align="center">
+    <img src="docs/static/images/Fig_Method.png" width="100%">
+</p>
+
 Latent Drift predicts **latent progression** in two stages:
 
 | Stage | Component | Code | What it does |
@@ -65,14 +72,6 @@ Latent Drift predicts **latent progression** in two stages:
 | **2 · Decoder-Transformer** | `Net2NetTransformer` | `src/models/medical_ldt.py` + `src/modules/transformer/action_gpt.py` | Autoregressively forecasts the discrete drift tokens, conditioned on the patient's **baseline anatomy** and **time gap**, then decodes them back into the predicted future volume |
 
 Entry points: `main.py` (LightningCLI training) and `infer.py` (sampling → mp4 / npy / nii).
-
-<br>
-
-# 🗺️ Roadmap
-
-- [x] Release inference code
-- [x] Release pretrained tokenizer + generator weights
-- [x] Release training code (both stages)
 
 <br>
 
@@ -120,8 +119,15 @@ the provided `save_nii_paths_to_txt(folder_path, output_txt_path)` helper.
 | `time_dif` | Month gap between the two scans (bucketed to 6-month bins internally) |
 | `pre_dx` / `post_dx` | Diagnosis labels at each visit |
 
-See `data/case.csv` for the expected format. The CSV path is set in each
-config's `data` section.
+The processed data format follows `data/case.csv`, e.g.:
+
+```csv
+pre_path,post_path,time_dif,pre_dx,post_dx
+scan_f8b367fd30a1.npy,scan_1ff4c3aa99ba.npy,6,0,0
+scan_835f1fad52b4.npy,scan_9fa1a47a2953.npy,12,0,0
+```
+
+The CSV path is set in each config's `data` section.
 
 <br>
 
