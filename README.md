@@ -3,7 +3,7 @@
 
 <p align="center">
     <a href="https://cutepkq.github.io/latent-drift/"><img src="https://img.shields.io/badge/Page-Project-blue" alt="Project Page"></a>
-    <a href="#"><img src="https://img.shields.io/badge/Paper-arXiv%20(coming%20soon)-lightgrey" alt="arXiv (coming soon)"></a>
+    <a href="https://arxiv.org/abs/2607.08270"><img src="https://img.shields.io/badge/Paper-arXiv-b31b1b" alt="arXiv"></a>
     <a href="https://huggingface.co/Radiance666/Progression-as-Latent-Drift"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Weights-HuggingFace-yellow" alt="Weights"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
     <img src="https://img.shields.io/badge/ECCV-2026-b31b1b" alt="ECCV 2026">
@@ -244,8 +244,7 @@ infer.py    inference / sampling script
 
 # 📑 Citation
 
-If you find this project useful for your research, please consider citing
-(arXiv entry will be added once available):
+If you find this project useful for your research, please consider citing:
 
 ```bibtex
 @inproceedings{feng2026latentdrift,
@@ -255,5 +254,14 @@ If you find this project useful for your research, please consider citing
                Liu, Yong and Wang, Shujun},
   booktitle = {European Conference on Computer Vision (ECCV)},
   year      = {2026}
+}
+
+@article{feng2026latentdrift_arxiv,
+  title   = {Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies},
+  author  = {Feng, Yuxiang and Wang, Juncheng and Xu, Chao and Hou, Wenlong and
+             Wang, Huihan and Qian, Yijie and Liu, Yang and Sun, Baigui and
+             Liu, Yong and Wang, Shujun},
+  journal = {arXiv preprint arXiv:2607.08270},
+  year    = {2026}
 }
 ```
