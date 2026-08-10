@@ -247,21 +247,10 @@ infer.py    inference / sampling script
 If you find this project useful for your research, please consider citing:
 
 ```bibtex
-@inproceedings{feng2026latentdrift,
-  title     = {Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies},
-  author    = {Feng, Yuxiang and Wang, Juncheng and Xu, Chao and Hou, Wenlong and
-               Wang, Huihan and Qian, Yijie and Liu, Yang and Sun, Baigui and
-               Liu, Yong and Wang, Shujun},
-  booktitle = {European Conference on Computer Vision (ECCV)},
-  year      = {2026}
-}
-
-@article{feng2026latentdrift_arxiv,
-  title   = {Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies},
-  author  = {Feng, Yuxiang and Wang, Juncheng and Xu, Chao and Hou, Wenlong and
-             Wang, Huihan and Qian, Yijie and Liu, Yang and Sun, Baigui and
-             Liu, Yong and Wang, Shujun},
-  journal = {arXiv preprint arXiv:2607.08270},
-  year    = {2026}
+@article{feng2026progression,
+  title={Progression as Latent Drift: Generative Forecasting of Slow-Evolving Pathologies},
+  author={Feng, Yuxiang and Wang, Juncheng and Xu, Chao and Hou, Wenlong and Wang, Huihan and Qian, Yijie and Liu, Yang and Sun, Baigui and Liu, Yong and Wan, Shujun},
+  journal={arXiv preprint arXiv:2607.08270},
+  year={2026}
 }
 ```
